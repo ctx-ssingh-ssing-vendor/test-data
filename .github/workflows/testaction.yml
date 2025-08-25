@@ -5,12 +5,12 @@ on:
     branches:
       - master
     paths:
-      - 'click_integrations_snowflake/bi_us/'
+      - 'click_integrations_snowflake/bi_us/**'
   pull_request:
     types:
       - closed
     paths:
-      - 'click_integrations_snowflake/bi_us/'
+      - 'click_integrations_snowflake/bi_us/**'
 
 jobs:
   bi_us_adhoc_task:
@@ -53,5 +53,5 @@ jobs:
           SNOWFLAKE_WAREHOUSE: ${{ secrets.SNOWFLAKE_WAREHOUSE }}
           ALL_CHANGED_FILES: ${{ steps.changed-files.outputs.all_changed_files }}
           SOURCE_BRANCH: ${{ github.event.pull_request.base.ref }}
-          BASE_PATH: "click_integrations_snowflake/bi_us/"
+          BASE_PATH: "click_integrations_snowflake/bi_us/**"
         run: python .github/workflows/bi_us_task.py
