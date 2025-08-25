@@ -15,7 +15,7 @@ on:
 jobs:
   bi_us_adhoc_task:
     if: github.event.pull_request.merged == true
-    runs-on: app-restricted-access-ubuntu-latest-8-cores
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
