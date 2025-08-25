@@ -1,8 +1,57 @@
-name: hello-world
-on: push
+name: BI US Adhoc Task
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'click_integrations_snowflake/bi_us/'
+  pull_request:
+    types:
+      - closed
+    paths:
+      - 'click_integrations_snowflake/bi_us/'
+
 jobs:
-  my-job:
-    runs-on: ubuntu-latest
+  bi_us_adhoc_task:
+    if: github.event.pull_request.merged == true
+    runs-on: app-restricted-access-ubuntu-latest-8-cores
+
     steps:
-      - name: my-step
-        run: echo "Hello World!"
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: master
+          token: ${{ secrets.CLICK_DATABOT_TOKEN }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9' 
+
+      - name: Install dependencies
+        run: pip install snowflake-connector-python
+
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v46
+
+      - name: List all changed files
+        run: |
+          for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
+            echo "$file was changed"
+          done
+
+      - name: Print Environment Variables
+        run: env
+
+      - name: Execute changed SQL files in Snowflake
+        env:
+          SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_BI_US_ACCOUNT }}
+          SNOWFLAKE_USER: ${{ secrets.SNOWFLAKE_BI_US_USER }}
+          SNOWFLAKE_PRIVATE_KEY: ${{ secrets.SNOWFLAKE_BI_US_KEY }}
+          SNOWFLAKE_WAREHOUSE: ${{ secrets.SNOWFLAKE_WAREHOUSE }}
+          ALL_CHANGED_FILES: ${{ steps.changed-files.outputs.all_changed_files }}
+          SOURCE_BRANCH: ${{ github.event.pull_request.base.ref }}
+          BASE_PATH: "click_integrations_snowflake/bi_us/"
+        run: python .github/workflows/bi_us_task.py
