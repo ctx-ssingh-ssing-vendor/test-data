@@ -54,4 +54,4 @@ jobs:
           ALL_CHANGED_FILES: ${{ steps.changed-files.outputs.all_changed_files }}
           SOURCE_BRANCH: ${{ github.event.pull_request.base.ref }}
           BASE_PATH: "click_integrations_snowflake/bi_us/**"
-        run: python .github/workflows/bi_us_task.py
+        run: python .github/workflows/task.py
